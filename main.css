@@ -37,5 +37,5 @@ h3 {
     background: bisque;
     z-index: 1;
     margin: 5px;
-    border: black dotted 1px;
+    border: black solid 1px;
 }
