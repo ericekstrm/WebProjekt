@@ -3,9 +3,7 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" type="text/css" href="main.css">
         <link rel="stylesheet" type="text/css" href="index.css">
-        <title>Title</title>
-
-        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+        <title>Awesome ChatSida</title>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.3/handlebars.min.js"></script>
     </head>
     <body>
@@ -15,48 +13,41 @@
         </div>
         <script type="text/x-handlebars-template" id="messageTemplate">
             <div class="message">
-                <h1>{{name}} </h1><h2> {{date}}</h2>
-                <hr color="black">
-                <p>{{message}}</p>
-                <div class="answers"></div>
-                <a class="svara">Svara</a>
+            <h1>{{name}} </h1><h2> {{date}}</h2>
+            <hr color="black">
+            <p>{{message}}</p>
+            <div class="answers"></div>
+            <a class="svara">Svara</a>
             </div>
         </script>
 
-        <script>
-$('#messageInput').keypress(function (e) {
-    if (e.keyCode == 13) {
-        var name = $('#nameInput').val();
-        var message = $("#messageInput").val();
-        //json strukt
-        var json = {name: name, message: message, date: new Date().toDateString()};
-
-        displayChatMessage(json);
-    }
-});
-function displayChatMessage(jsonStrukt) {
-    //skapa template
-    var template = $("#messageTemplate").html();
-    var renderer = Handlebars.compile(template);
-
-    $("#mainWindow").append(renderer(jsonStrukt));
-}
-        </script>
         <div id="content">
             <div id="mainWindow">
-                <div class="message">
-                    <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
-                    <hr>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Praesent ex diam, pharetra id efficitur gravida, vehicula a elit. </p>
-                    <div class="answers"></div>
-                    <a class="svara">Svara</a>
-                </div>
-                <div class="message">
-                    <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
-                    <hr>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Praesent ex diam, pharetra id efficitur gravida, vehicula a elit. </p>
-                    <div class="answer"></div>
-                    <a class="svara">Svara</a>
+                <div id="answers">
+                    <div class="message" id="ruta1">
+                        <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
+                        <hr>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+                        <div class="answers"></div>
+                        <a class="svara" id="hej">Svara</a>
+                        <div class="answerBox" style="display: none;">
+                            <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
+                            <br>
+                            <button>Svara</button>
+                        </div>
+                    </div>
+                    <div class="message" id="ruta2">
+                        <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
+                        <hr>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <div class="answer"></div>
+                        <a class="svara">Svara</a>
+                        <div class="answerBox" style="display: none;">
+                            <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
+                            <br>
+                            <button>Svara</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="sidePanel">
@@ -66,5 +57,7 @@ function displayChatMessage(jsonStrukt) {
                 </ul>
             </div>
         </div>
+        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="js.js"></script>
     </body>
 </html>
