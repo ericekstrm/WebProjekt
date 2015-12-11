@@ -27,11 +27,11 @@
     margin-left: 10px;
 }
 
-.svara {
+a {
     text-decoration: underline;
 }
 
-.svara:hover {
+a:hover {
     color: green;
     cursor: pointer;
 }

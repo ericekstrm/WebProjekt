@@ -1,9 +1,15 @@
+$(document).ready(function(){
+    reAddListeners();
+});
+
 function addChatMessage(whereToAdd, jsonStrukt) {
 
     var template = $("#messageTemplate").html();
     var renderer = Handlebars.compile(template);
 
-    $(whereToAdd).find(".answers").append(renderer(jsonStrukt));
+    $(whereToAdd).children(".answers").append(renderer(jsonStrukt));
+
+    reAddListeners();
 }
 
 $('#messageInput').keypress(function (e) {
@@ -18,9 +24,32 @@ $('#messageInput').keypress(function (e) {
     }
 });
 
-$(".svara").click(function () {
-    console.log("hej");
-    //$("#answerBox").css("display", "initial");
-    var x = $(this).parent().find(".answerBox").css("display", "initial");
-    $(this).css("display", "none");
-});
+function reAddListeners() {
+    $(".svara").off();
+    $(".svara").click(function () {
+        $(this).parent().children(".answerBox").css("display", "initial");
+        $(this).css("display", "none");
+    });
+
+    $(".svaraConfirm").off();
+    $(".svaraConfirm").click(function () {
+        var parentBox = $(this).parent().parent();
+
+        var message = parentBox.children(".answerBox").children("textarea").val();
+        console.log(message);
+        var json = {name: "Eric", message: message, date: new Date().toDateString()};
+
+        addChatMessage(parentBox, json);
+
+        parentBox.children(".answerBox").css("display", "none");
+        parentBox.children(".svara").css("display", "initial");
+    });
+    
+    $(".cancel").off();
+    $(".cancel").click(function(){
+        var parentBox = $(this).parent().parent();
+        
+        parentBox.children(".answerBox").css("display", "none");
+        parentBox.children(".svara").css("display", "initial");
+    });
+}
