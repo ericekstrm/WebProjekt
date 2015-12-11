@@ -24,6 +24,16 @@ textarea {
     resize: none;
 }
 
+a {
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+a:hover {
+    color: green;
+    cursor: pointer;
+}
+
 #header {
     position: fixed;
     top: 0px;
