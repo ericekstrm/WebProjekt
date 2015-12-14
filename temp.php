@@ -1,58 +1,32 @@
+<!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="main.css">
-        <link rel="stylesheet" type="text/css" href="index.css">
-        <title>Awesome ChatSida</title>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.3/handlebars.min.js"></script>
-    </head>
-    <body>
-        <div id="header">
-            <input type='text' id='nameInput' placeholder='name'>
-            <input type='text' id='messageInput' placeholder='Message'>
-        </div>
-        <script type="text/x-handlebars-template" id="messageTemplate">
-            <div class="message" id="nåtunikt">
-                <h1>{{name}} </h1><h2> {{date}}</h2>
-                <hr color="gray">
-                <p>{{message}}</p>
-                <div class="answers"></div>
-                <a class="svara">Svara</a>
-                <div class="answerBox" style="display: none;">
-                    <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
-                    <br>
-                    <button class="svaraConfirm">Svara</button>
-                    <a class="cancel">Cancel</a>
-                </div>
-            </div>
-        </script>
-
-        <div id="content">
-            <div id="mainWindow">
-                <div class="answers">
-                    <div class="message" id="ruta1">
-                        <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
-                        <hr color="gray">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
-                        <div class="answers"></div>
-                        <a class="svara" id="hej">Svara</a>
-                        <div class="answerBox" style="display: none;">
-                            <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
-                            <br>
-                            <button class="svaraConfirm">Svara</button> 
-                            <a class="cancel">Cancel</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="sidePanel">
-                <h3>Trådar</h3>
-                <ul>
-                    <li>1</li>
-                </ul>
-            </div>
-        </div>
-        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script type="text/javascript" src="js.js"></script>
-    </body>
+  <head>
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <link rel='stylesheet' type='text/css' href='/resources/tutorial/css/example.css'>
+  </head>
+  <body>
+    <div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message'>
+    <script>
+      var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/firebaseTest');
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#nameInput').val();
+          var text = $('#messageInput').val();
+          myDataRef.push({name: name, text: text});
+          $('#messageInput').val('');
+        }
+      });
+      myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+        displayChatMessage(message.name, message.text);
+      });
+      function displayChatMessage(name, text) {
+        $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+    </script>
+  </body>
 </html>

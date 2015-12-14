@@ -1,23 +1,22 @@
-$(document).ready(function(){
-    reAddListeners();
+var myDataRef;
+
+$(document).ready(function () {
+    myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/firebaseTest');
+
+    addAnswerListeners();
+    addFirebaseListeners();
 });
 
 function addChatMessage(whereToAdd, jsonStrukt) {
-
-    var template = $("#messageTemplate").html();
-    var renderer = Handlebars.compile(template);
-
-    $(whereToAdd).children(".answers").append(renderer(jsonStrukt));
-
-    reAddListeners();
+    myDataRef.push(jsonStrukt);
+    addAnswerListeners();
 }
 
 $('#messageInput').keypress(function (e) {
-    console.log("japp");
     if (e.keyCode == 13) {
         var name = $('#nameInput').val();
         var message = $("#messageInput").val();
-        //json strukt
+
         var json = {name: name, message: message, date: new Date().toDateString()};
 
         addChatMessage("#mainWindow", json);
@@ -25,6 +24,11 @@ $('#messageInput').keypress(function (e) {
 });
 
 function reAddListeners() {
+    firebaseListeners();
+}
+
+function addAnswerListeners() {
+    //displays the box for answering messages and hides the "Svara" link
     $(".svara").off();
     $(".svara").click(function () {
         $(this).parent().children(".answerBox").css("display", "initial");
@@ -42,14 +46,26 @@ function reAddListeners() {
         addChatMessage(parentBox, json);
 
         parentBox.children(".answerBox").css("display", "none");
+        parentBox.children(".answerBox").children("textarea").val("");
         parentBox.children(".svara").css("display", "initial");
     });
-    
+
     $(".cancel").off();
-    $(".cancel").click(function(){
+    $(".cancel").click(function () {
         var parentBox = $(this).parent().parent();
-        
+
         parentBox.children(".answerBox").css("display", "none");
+        parentBox.children(".answerBox").children("textarea").val("");
         parentBox.children(".svara").css("display", "initial");
+    });
+}
+
+function addFirebaseListeners() {
+    myDataRef.on('child_added', function (snapshot) {
+        var template = $("#messageTemplate").html();
+        var renderer = Handlebars.compile(template);
+
+        var message = snapshot.val();
+        $("#mainWindow").children(".answers").append(renderer(message));
     });
 }
