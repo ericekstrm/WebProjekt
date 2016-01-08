@@ -9,7 +9,6 @@ $(document).ready(function () {
 
 function addChatMessage(whereToAdd, jsonStrukt) {
     myDataRef.push(jsonStrukt);
-    addAnswerListeners();
 }
 
 $('#messageInput').keypress(function (e) {
@@ -22,10 +21,6 @@ $('#messageInput').keypress(function (e) {
         addChatMessage("#mainWindow", json);
     }
 });
-
-function reAddListeners() {
-    firebaseListeners();
-}
 
 function addAnswerListeners() {
     //displays the box for answering messages and hides the "Svara" link
@@ -50,6 +45,7 @@ function addAnswerListeners() {
         parentBox.children(".svara").css("display", "initial");
     });
 
+    //hides the box for answering messages and displays the "Svara" link
     $(".cancel").off();
     $(".cancel").click(function () {
         var parentBox = $(this).parent().parent();
@@ -67,5 +63,6 @@ function addFirebaseListeners() {
 
         var message = snapshot.val();
         $("#mainWindow").children(".answers").append(renderer(message));
+        addAnswerListeners();
     });
 }

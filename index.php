@@ -12,7 +12,7 @@
             <input type='text' id='messageInput' placeholder='Message'>
         </div>
         <script type="text/x-handlebars-template" id="messageTemplate">
-            <div class="message" id="nåtunikt">
+            <div class="message">
                 <h1>{{name}} </h1><h2> {{date}}</h2>
                 <hr color="gray">
                 <p>{{message}}</p>
@@ -30,19 +30,6 @@
         <div id="content">
             <div id="mainWindow">
                 <div class="answers">
-                    <div class="message" id="ruta1">
-                        <h1>Ett Namn</h1><h2> 2015-12-12 12:12</h2>
-                        <hr color="gray">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
-                        <div class="answers"></div>
-                        <a class="svara" id="hej">Svara</a>
-                        <div class="answerBox" style="display: none;">
-                            <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
-                            <br>
-                            <button class="svaraConfirm">Svara</button> 
-                            <a class="cancel">Cancel</a>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div id="sidePanel">
