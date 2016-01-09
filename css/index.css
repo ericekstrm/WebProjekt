@@ -6,7 +6,7 @@
     justify-content: center;
 }
 
-#mainWindow {
+.mainWindow {
     position: relative;
     width: 600px;
     background: bisque;
@@ -17,7 +17,6 @@
 
 .message {
     position: relative;
-    //background: red;
     z-index: 2;
     border: black dotted 1px;
 
