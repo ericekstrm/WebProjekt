@@ -1,14 +1,12 @@
 var dataBaseLink = 'https://glowing-heat-4267.firebaseio.com/';
 
 $(document).ready(function () {
-    //myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/firebaseTest/answers');
-
     addAnswerListeners();
     addFirebaseListeners();
 });
 
-function addChatMessage(whereToAdd, jsonStrukt) {
-    
+function pushToFirebase(whereToAdd, jsonStrukt) {
+
     //fetch the full path of the message
     var object = $(whereToAdd).children("#answers");
     var path = "";
@@ -17,15 +15,7 @@ function addChatMessage(whereToAdd, jsonStrukt) {
         object = object.parent();
     }
     path = object.attr("id") + "/" + path;
-    
-    console.log(path);
 
-//    var path = "";
-//    for (var i = array.length; i > 0; i--) {
-//        path += array[i - 1] + "/";
-//    }
-
-    console.log(path);
     var myDataRef = new Firebase(dataBaseLink + path);
     myDataRef.push(jsonStrukt);
 }
@@ -37,7 +27,7 @@ $('#messageInput').keypress(function (e) {
 
         var json = {name: name, message: message, date: new Date().toDateString()};
 
-        addChatMessage(".mainWindow", json);
+        pushToFirebase(".mainWindow", json);
     }
 });
 
@@ -55,7 +45,7 @@ function addAnswerListeners() {
 
         var message = parentBox.children(".answerBox").children("textarea").val();
         var json = {name: "Eric", message: message, date: new Date().toDateString()};
-        addChatMessage(parentBox, json);
+        pushToFirebase(parentBox, json);
 
         //hides the box for answering messages and displays the "Svara" link
         parentBox.children(".answerBox").css("display", "none");
@@ -76,22 +66,40 @@ function addAnswerListeners() {
 
 function addFirebaseListeners() {
     var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/firebaseTest/answers');
+
+    //prepare the template
+    var template = $("#messageTemplate").html();
+    var renderer = Handlebars.compile(template);
+
+
+
     myDataRef.on('child_added', function (snapshot) {
-        var template = $("#messageTemplate").html();
-        var renderer = Handlebars.compile(template);
-
-        var parentId = snapshot.ref().parent().parent().key();
-
-        var data = snapshot.val();
-        var path = snapshot.ref();
-        //bland det fulaste jag nånsin skrivit 
-        data = {date: data.date, message: data.message, name: data.name, id: path.key()};
-        console.log(data);
-        addMessage(data, parentId, renderer);
-        addAnswerListeners();
+        stuff(snapshot);
     });
-}
 
-function addMessage(message, whereToAdd, renderer) {
-    $("#" + whereToAdd).children("#answers").append(renderer(message));
+    myDataRef.on('child_changed', function (snapshot) {
+        stuff(snapshot);
+    });
+
+    function stuff(snapshot) {
+        var rawData = snapshot.val();
+        var path = snapshot.ref();
+        var parentId = path.parent().parent().key();
+
+        if (document.getElementById(path.key()) === null) {
+            var data = {date: rawData.date, message: rawData.message, name: rawData.name, id: path.key()};
+            addMessage(data, "#" + parentId, renderer);
+        }
+
+        if (rawData.answers !== null) {
+            snapshot.child("answers").forEach(function (childSnapshot) {
+                stuff(childSnapshot);
+            });
+        }
+    }
+
+    function addMessage(data, whereToAdd, renderer) {
+        $(whereToAdd).children("#answers").append(renderer(data));
+        addAnswerListeners();
+    }
 }
