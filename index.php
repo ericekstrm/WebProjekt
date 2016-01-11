@@ -3,28 +3,10 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" type="text/css" href="css/main.css">
         <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/thread.css">
 
         <title>Awesome ChatSida</title>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.3/handlebars.min.js"></script>
-
-        <script type="text/javascript">
-            
-            <?php
-                if (isset($_GET["t"])) {
-                    $var = $_GET["t"];
-                } else{
-                    $var = "startsida";
-                }
-            
-            ?>
-            var MyJSStringVar = "<?php Print($var); ?>";
-        </script>
-    </head>
-    <body>
-        <div id="header">
-            <input type='text' id='nameInput' placeholder='name'>
-            <input type='text' id='messageInput' placeholder='Message'>
-        </div>
         <script type="text/x-handlebars-template" id="messageTemplate">
             <div class="message" id="{{id}}">
             <h1>{{name}} </h1><h2> {{date}}</h2>
@@ -40,7 +22,30 @@
             </div>
             </div>
         </script>
-
+        <script type="text/x-handlebars-template" id="threadTemplate">
+            <div id="threadMain" style="left:{{left}}; top:{{top}};">
+                <input type='text' id='threadName' placeholder='Name of Thread'>
+                <textarea id="threadText" placeholder="Skriv en kommentar" ></textarea>
+                <button id="threadConfirm">Skapa Tråd</button>
+                <a id="threadCancel">Cancel</a>
+            </div>
+        </script>
+        <script type="text/javascript">
+<?php
+if (isset($_GET["t"])) {
+    $var = $_GET["t"];
+} else {
+    $var = "startsida";
+}
+?>
+            var MyJSStringVar = "<?php Print($var); ?>";
+        </script>
+    </head>
+    <body>
+        <div id="header">
+            <input type='text' id='nameInput' placeholder='name'>
+            <input type='text' id='messageInput' placeholder='Message'>
+        </div>
         <div id="content">
             <div id="firebaseTest" class="mainwindow">
                 <div id="answers">
@@ -50,6 +55,7 @@
                 <h3>Trådar</h3>
                 <ul>
                 </ul>
+                <a id="addThread">Ny Tråd</a>
             </div>
         </div>
         <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>

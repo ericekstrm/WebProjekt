@@ -1,11 +1,9 @@
 var dataBaseLink = 'https://glowing-heat-4267.firebaseio.com/';
 
 $(document).ready(function () {
-    addAnswerListeners();
-    addFirebaseListeners();
-    addMoreListeners();
-
-    console.log(MyJSStringVar);
+    addPushListeners();
+    addPullListeners();
+    addThreadListeners();
 });
 
 function pushToFirebase(whereToAdd, jsonStrukt) {
@@ -23,19 +21,18 @@ function pushToFirebase(whereToAdd, jsonStrukt) {
     myDataRef.push(jsonStrukt);
 }
 
-$('#messageInput').keypress(function (e) {
-    if (e.keyCode == 13) {
-        var name = $('#nameInput').val();
-        var message = $("#messageInput").val();
+function addPushListeners() {
+    $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+            var name = $('#nameInput').val();
+            var message = $("#messageInput").val();
 
-        var json = {name: name, message: message, date: new Date().toDateString()};
+            var json = {name: name, message: message, date: new Date().toDateString()};
 
-        pushToFirebase(".mainWindow", json);
-    }
-});
+            pushToFirebase(".mainWindow", json);
+        }
+    });
 
-function addAnswerListeners() {
-    //displays the box for answering messages and hides the "Svara" link
     $(".svara").off();
     $(".svara").click(function () {
         $(this).parent().children(".answerBox").css("display", "initial");
@@ -50,13 +47,11 @@ function addAnswerListeners() {
         var json = {name: "Eric", message: message, date: new Date().toDateString()};
         pushToFirebase(parentBox, json);
 
-        //hides the box for answering messages and displays the "Svara" link
         parentBox.children(".answerBox").css("display", "none");
         parentBox.children(".answerBox").children("textarea").val("");
         parentBox.children(".svara").css("display", "initial");
     });
 
-    //hides the box for answering messages and displays the "Svara" link
     $(".cancel").off();
     $(".cancel").click(function () {
         var parentBox = $(this).parent().parent();
@@ -67,22 +62,22 @@ function addAnswerListeners() {
     });
 }
 
-function addFirebaseListeners() {
+function addPullListeners() {
     var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + MyJSStringVar + '/answers');
 
-    //prepare the template
     var template = $("#messageTemplate").html();
     var renderer = Handlebars.compile(template);
 
     myDataRef.on('child_added', function (snapshot) {
-        stuff(snapshot);
+        printSnapshot(snapshot);
     });
 
     myDataRef.on('child_changed', function (snapshot) {
-        stuff(snapshot);
+        printSnapshot(snapshot);
     });
 
-    function stuff(snapshot) {
+    //rikursiv funktion för att gå igenom alla medelanden och svar
+    function printSnapshot(snapshot) {
         var rawData = snapshot.val();
         var path = snapshot.ref();
         var parentId = path.parent().parent().key();
@@ -94,23 +89,31 @@ function addFirebaseListeners() {
 
         if (rawData.answers !== null) {
             snapshot.child("answers").forEach(function (childSnapshot) {
-                stuff(childSnapshot);
+                printSnapshot(childSnapshot);
             });
         }
     }
 
     function addMessage(data, whereToAdd, renderer) {
         $(whereToAdd).children("#answers").append(renderer(data));
-        addAnswerListeners();
+        addPushListeners();
     }
 }
 
-function addMoreListeners() {
+function addThreadListeners() {
     var myDataRef = new Firebase(dataBaseLink);
 
     myDataRef.on('child_added', function (snapshot) {
         var name = snapshot.ref().key();
-        $("#sidePanel").children("ul").append("<li><a href='?t=" + 
+        $("#sidePanel").children("ul").append("<li><a href='?t=" +
                 name + "'>" + name + "</a></li>");
+    });
+
+    $("#addThread").click(function () {
+        var template = $("#threadTemplate").html();
+        var renderer = Handlebars.compile(template);
+
+        var pos = $(this).offset();
+        $("#content").append(renderer({top: pos.top, left: pos.left}));
     });
 }

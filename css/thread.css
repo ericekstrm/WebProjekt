@@ -1,0 +1,30 @@
+#addThread {
+    position: relative;
+    float: right;
+    margin: 5px;
+}
+
+#threadMain {
+    position: fixed;
+    width: 350px;
+    height: 250px;
+    z-index: 2;
+    
+    background: bisque;
+    border: 1px solid black;
+}
+
+#threadName {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+#threadText {
+    margin: 10px;
+    width: calc(100% - 20px);
+    height: 67%;
+}
+
+#threadConfirm {
+    margin-left: 10px;
+}
