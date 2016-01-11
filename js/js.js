@@ -3,6 +3,9 @@ var dataBaseLink = 'https://glowing-heat-4267.firebaseio.com/';
 $(document).ready(function () {
     addAnswerListeners();
     addFirebaseListeners();
+    addMoreListeners();
+
+    console.log(MyJSStringVar);
 });
 
 function pushToFirebase(whereToAdd, jsonStrukt) {
@@ -65,13 +68,11 @@ function addAnswerListeners() {
 }
 
 function addFirebaseListeners() {
-    var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/firebaseTest/answers');
+    var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + MyJSStringVar + '/answers');
 
     //prepare the template
     var template = $("#messageTemplate").html();
     var renderer = Handlebars.compile(template);
-
-
 
     myDataRef.on('child_added', function (snapshot) {
         stuff(snapshot);
@@ -102,4 +103,14 @@ function addFirebaseListeners() {
         $(whereToAdd).children("#answers").append(renderer(data));
         addAnswerListeners();
     }
+}
+
+function addMoreListeners() {
+    var myDataRef = new Firebase(dataBaseLink);
+
+    myDataRef.on('child_added', function (snapshot) {
+        var name = snapshot.ref().key();
+        $("#sidePanel").children("ul").append("<li><a href='?t=" + 
+                name + "'>" + name + "</a></li>");
+    });
 }

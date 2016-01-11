@@ -6,6 +6,19 @@
 
         <title>Awesome ChatSida</title>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.3/handlebars.min.js"></script>
+
+        <script type="text/javascript">
+            
+            <?php
+                if (isset($_GET["t"])) {
+                    $var = $_GET["t"];
+                } else{
+                    $var = "startsida";
+                }
+            
+            ?>
+            var MyJSStringVar = "<?php Print($var); ?>";
+        </script>
     </head>
     <body>
         <div id="header">
@@ -36,7 +49,6 @@
             <div id="sidePanel">
                 <h3>Trådar</h3>
                 <ul>
-                    <li>1</li>
                 </ul>
             </div>
         </div>
