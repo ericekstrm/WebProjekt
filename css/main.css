@@ -43,6 +43,8 @@ a:hover {
     height: 75px;
     background-color: green;
     z-index: 2;
+    display: flex;
+    justify-content: center;
 }
 
 #sidePanel {
@@ -52,4 +54,9 @@ a:hover {
     z-index: 1;
     margin: 5px;
     border: black solid 1px;
+}
+
+#nameInput {
+    max-height: 30px;
+    width: 300px;
 }

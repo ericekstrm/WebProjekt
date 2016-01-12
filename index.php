@@ -24,10 +24,10 @@
         </script>
         <script type="text/x-handlebars-template" id="threadTemplate">
             <div id="threadMain" style="left:{{left}}; top:{{top}};">
-                <input type='text' id='threadName' placeholder='Name of Thread'>
-                <textarea id="threadText" placeholder="Skriv en kommentar" ></textarea>
-                <button id="threadConfirm">Skapa Tråd</button>
-                <a id="threadCancel">Cancel</a>
+            <input type='text' id='threadName' placeholder='Name of Thread'>
+            <textarea id="threadText" placeholder="Skriv en kommentar" ></textarea>
+            <button id="threadConfirm">Skapa Tråd</button>
+            <a id="threadCancel">Cancel</a>
             </div>
         </script>
         <script type="text/javascript">
@@ -38,17 +38,23 @@ if (isset($_GET["t"])) {
     $var = "startsida";
 }
 ?>
-            var MyJSStringVar = "<?php Print($var); ?>";
+var MyJSStringVar = "<?php print($var); ?>";
         </script>
     </head>
     <body>
         <div id="header">
-            <input type='text' id='nameInput' placeholder='name'>
-            <input type='text' id='messageInput' placeholder='Message'>
+            <input type='text' id='nameInput' placeholder='Chose a Screen Name'>
         </div>
         <div id="content">
-            <div id="firebaseTest" class="mainwindow">
+            <div id="<?php print($var) ?>" class="mainwindow">
                 <div id="answers">
+                </div>
+                <a class="svara" style="margin-left:10px;">Svara</a>
+                <div class="answerBox" style="display: none;">
+                    <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
+                    <br>
+                    <button class="svaraConfirm">Svara</button>
+                    <a class="cancel">Cancel</a>
                 </div>
             </div>
             <div id="sidePanel">

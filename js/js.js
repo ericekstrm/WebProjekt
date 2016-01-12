@@ -17,8 +17,8 @@ function pushToFirebase(whereToAdd, jsonStrukt) {
     }
     path = object.attr("id") + "/" + path;
 
-    var myDataRef = new Firebase(dataBaseLink + path);
-    myDataRef.push(jsonStrukt);
+    var dataRef = new Firebase(dataBaseLink + path);
+    dataRef.push(jsonStrukt);
 }
 
 function addPushListeners() {
@@ -44,7 +44,7 @@ function addPushListeners() {
         var parentBox = $(this).parent().parent();
 
         var message = parentBox.children(".answerBox").children("textarea").val();
-        var json = {name: "Eric", message: message, date: new Date().toDateString()};
+        var json = {name: $("#nameInput").val(), message: message, date: new Date().toDateString()};
         pushToFirebase(parentBox, json);
 
         parentBox.children(".answerBox").css("display", "none");
@@ -63,16 +63,16 @@ function addPushListeners() {
 }
 
 function addPullListeners() {
-    var myDataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + MyJSStringVar + '/answers');
+    var dataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + MyJSStringVar + '/answers');
 
     var template = $("#messageTemplate").html();
     var renderer = Handlebars.compile(template);
 
-    myDataRef.on('child_added', function (snapshot) {
+    dataRef.on('child_added', function (snapshot) {
         printSnapshot(snapshot);
     });
 
-    myDataRef.on('child_changed', function (snapshot) {
+    dataRef.on('child_changed', function (snapshot) {
         printSnapshot(snapshot);
     });
 
@@ -81,7 +81,7 @@ function addPullListeners() {
         var rawData = snapshot.val();
         var path = snapshot.ref();
         var parentId = path.parent().parent().key();
-
+        
         if (document.getElementById(path.key()) === null) {
             var data = {date: rawData.date, message: rawData.message, name: rawData.name, id: path.key()};
             addMessage(data, "#" + parentId, renderer);
@@ -101,9 +101,9 @@ function addPullListeners() {
 }
 
 function addThreadListeners() {
-    var myDataRef = new Firebase(dataBaseLink);
+    var dataRef = new Firebase(dataBaseLink);
 
-    myDataRef.on('child_added', function (snapshot) {
+    dataRef.on('child_added', function (snapshot) {
         var name = snapshot.ref().key();
         $("#sidePanel").children("ul").append("<li><a href='?t=" +
                 name + "'>" + name + "</a></li>");
@@ -115,5 +115,35 @@ function addThreadListeners() {
 
         var pos = $(this).offset();
         $("#content").append(renderer({top: pos.top, left: pos.left}));
+        bindNewThreadListeners();
     });
+    
+    function bindNewThreadListeners(){
+        $("#threadConfirm").click(function(){
+            var threadName = $("#threadName").val();
+            var threadName = threadName.replace(" ", "_");
+            console.log(dataBaseLink + threadName + "/answers/");
+            var dataRef = new Firebase(dataBaseLink + threadName + "/answers/");
+            var s = $("#threadName").val();
+            console.log(s);
+            var json = {name: $("#nameInput").val(), message: $("#threadText").val(), date: new Date().toDateString()};
+            dataRef.push(json);
+            
+            $("#threadMain").remove();
+            unbindNewThreadListeners();
+            
+            window.location.href = "?t=" + threadName;
+        });
+        
+        $("#threadCancel").click(function(){
+            $("#threadMain").remove();
+            unbindNewThreadListeners();
+        });
+    }
+    
+    function unbindNewThreadListeners(){
+        $("#threadConfirm").off();
+        $("#threadCancel").off();
+        
+    }
 }
