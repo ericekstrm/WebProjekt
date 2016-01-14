@@ -4,11 +4,12 @@ $(document).ready(function () {
     addPushListeners();
     addPullListeners();
     addThreadListeners();
+    addNameListener();
 });
 
 function pushToFirebase(whereToAdd, jsonStrukt) {
 
-    //fetch the full path of the message
+    //går igenom alla föräldrar och samanställer en sökväg för firebase
     var object = $(whereToAdd).children("#answers");
     var path = "";
     while (object.attr("class") !== "mainwindow") {
@@ -22,17 +23,7 @@ function pushToFirebase(whereToAdd, jsonStrukt) {
 }
 
 function addPushListeners() {
-    $('#messageInput').keypress(function (e) {
-        if (e.keyCode == 13) {
-            var name = $('#nameInput').val();
-            var message = $("#messageInput").val();
-
-            var json = {name: name, message: message, date: new Date().toDateString()};
-
-            pushToFirebase(".mainWindow", json);
-        }
-    });
-
+    //länken för att få upp dialogen för att svara på medelanden
     $(".svara").off();
     $(".svara").click(function () {
         $(this).parent().children(".answerBox").css("display", "initial");
@@ -44,7 +35,16 @@ function addPushListeners() {
         var parentBox = $(this).parent().parent();
 
         var message = parentBox.children(".answerBox").children("textarea").val();
-        var json = {name: $("#nameInput").val(), message: message, date: new Date().toDateString()};
+        var name = "";
+        if ($("#nameInput").val() !== "") {
+            name = $("#nameInput").val();
+        } else {
+            alert("du måste välja ett användarnamn!");
+            return;
+        }
+        var date = new Date().toDateString();
+
+        var json = {name: name, message: message, date: date};
         pushToFirebase(parentBox, json);
 
         parentBox.children(".answerBox").css("display", "none");
@@ -52,6 +52,7 @@ function addPushListeners() {
         parentBox.children(".svara").css("display", "initial");
     });
 
+    //länk för att stänga ner dialogen
     $(".cancel").off();
     $(".cancel").click(function () {
         var parentBox = $(this).parent().parent();
@@ -63,30 +64,34 @@ function addPushListeners() {
 }
 
 function addPullListeners() {
-    var dataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + MyJSStringVar + '/answers');
+    var dataRef = new Firebase('https://glowing-heat-4267.firebaseio.com/' + currentThread + '/answers');
 
     var template = $("#messageTemplate").html();
     var renderer = Handlebars.compile(template);
 
+    //triggar på när sidan laddas och för alla nya "bas" medelanden
     dataRef.on('child_added', function (snapshot) {
         printSnapshot(snapshot);
     });
 
+    //triggar på nya svar
     dataRef.on('child_changed', function (snapshot) {
         printSnapshot(snapshot);
     });
 
-    //rikursiv funktion för att gå igenom alla medelanden och svar
+    //rikursiv funktion för att gå igenom medelandet och alla svar
     function printSnapshot(snapshot) {
         var rawData = snapshot.val();
         var path = snapshot.ref();
         var parentId = path.parent().parent().key();
-        
+
+        //kollar om medelandet redan finns på sidan
         if (document.getElementById(path.key()) === null) {
             var data = {date: rawData.date, message: rawData.message, name: rawData.name, id: path.key()};
             addMessage(data, "#" + parentId, renderer);
         }
 
+        //loopar igenom alla svar
         if (rawData.answers !== null) {
             snapshot.child("answers").forEach(function (childSnapshot) {
                 printSnapshot(childSnapshot);
@@ -103,12 +108,18 @@ function addPullListeners() {
 function addThreadListeners() {
     var dataRef = new Firebase(dataBaseLink);
 
+    //triggar när sidan laddas och på varje ny tråd
     dataRef.on('child_added', function (snapshot) {
         var name = snapshot.ref().key();
-        $("#sidePanel").children("ul").append("<li><a href='?t=" +
-                name + "'>" + name + "</a></li>");
+        console.log($("#nameInput").val());
+        $("#sidePanel").children("ul").append("<li><a class='threadLink'>" + name + "</a></li>");
+        $(".threadLink").off();
+        $(".threadLink").click(function () {
+            window.location.href = "?t=" + $(this).html();
+        });
     });
 
+    //skapar ny-tråd dialogen
     $("#addThread").click(function () {
         var template = $("#threadTemplate").html();
         var renderer = Handlebars.compile(template);
@@ -117,9 +128,10 @@ function addThreadListeners() {
         $("#content").append(renderer({top: pos.top, left: pos.left}));
         bindNewThreadListeners();
     });
-    
-    function bindNewThreadListeners(){
-        $("#threadConfirm").click(function(){
+
+    function bindNewThreadListeners() {
+        $("#threadConfirm").click(function () {
+            //skapar ny tråd och pushar till firebase
             var threadName = $("#threadName").val();
             var threadName = threadName.replace(" ", "_");
             console.log(dataBaseLink + threadName + "/answers/");
@@ -128,22 +140,32 @@ function addThreadListeners() {
             console.log(s);
             var json = {name: $("#nameInput").val(), message: $("#threadText").val(), date: new Date().toDateString()};
             dataRef.push(json);
-            
-            $("#threadMain").remove();
-            unbindNewThreadListeners();
-            
-            window.location.href = "?t=" + threadName;
+
+            removeNewThreadDialog();
+
+             window.location.href = "?t=" + threadName;
         });
-        
-        $("#threadCancel").click(function(){
-            $("#threadMain").remove();
-            unbindNewThreadListeners();
+
+        $("#threadCancel").click(function () {
+            removeNewThreadDialog();
         });
     }
-    
-    function unbindNewThreadListeners(){
+
+    function removeNewThreadDialog() {
+        $("#threadMain").remove();
+
         $("#threadConfirm").off();
         $("#threadCancel").off();
-        
+
     }
 }
+
+function addNameListener(){
+    $("#nameInput").attr("value", localStorage["name"]);
+    
+    $("#nameInput").keyup(function(){
+        localStorage["name"] = $("#nameInput").val();
+        console.log(localStorage["name"]);
+    });
+}
+

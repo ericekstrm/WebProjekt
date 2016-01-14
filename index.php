@@ -1,3 +1,10 @@
+<?php
+if (isset($_GET["t"])) {
+    $var = filter_input(INPUT_GET, 't', FILTER_SANITIZE_SPECIAL_CHARS);
+} else {
+    $var = "startsida";
+}
+?>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -31,14 +38,7 @@
             </div>
         </script>
         <script type="text/javascript">
-<?php
-if (isset($_GET["t"])) {
-    $var = $_GET["t"];
-} else {
-    $var = "startsida";
-}
-?>
-var MyJSStringVar = "<?php print($var); ?>";
+            var currentThread = "<?php print($var); ?>";
         </script>
     </head>
     <body>

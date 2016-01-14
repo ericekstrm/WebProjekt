@@ -12,6 +12,7 @@
     background: bisque;
     z-index: 1;
     margin: 5px;
+    padding: 10px;
     border: 1px solid black;
 }
 
@@ -21,7 +22,6 @@
     border: black dotted 1px;
 
     width: calc(100% - 25px);
-    margin: 5px;
     padding: 5px;
-    margin-left: 10px;
+    margin-bottom: 10px;
 }
