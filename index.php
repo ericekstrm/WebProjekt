@@ -1,8 +1,13 @@
+<!DOCTYPE html>
 <?php
 if (isset($_GET["t"])) {
-    $var = filter_input(INPUT_GET, 't', FILTER_SANITIZE_SPECIAL_CHARS);
+    if ($_GET["t"] != "") {
+        $currentThread = filter_input(INPUT_GET, 't', FILTER_SANITIZE_SPECIAL_CHARS);
+    } else {
+        $currentThread = "startsida";
+    }
 } else {
-    $var = "startsida";
+    $currentThread = "startsida";
 }
 ?>
 <html>
@@ -30,7 +35,7 @@ if (isset($_GET["t"])) {
             </div>
         </script>
         <script type="text/x-handlebars-template" id="threadTemplate">
-            <div id="threadMain" style="left:{{left}}; top:{{top}};">
+            <div id="threadMain" style=" left:{{left}}px; top:{{top}}px;">
             <input type='text' id='threadName' placeholder='Name of Thread'>
             <textarea id="threadText" placeholder="Skriv en kommentar" ></textarea>
             <button id="threadConfirm">Skapa Tråd</button>
@@ -38,7 +43,7 @@ if (isset($_GET["t"])) {
             </div>
         </script>
         <script type="text/javascript">
-            var currentThread = "<?php print($var); ?>";
+            var currentThread = "<?php print($currentThread); ?>";
         </script>
     </head>
     <body>
@@ -46,10 +51,10 @@ if (isset($_GET["t"])) {
             <input type='text' id='nameInput' placeholder='Chose a Screen Name'>
         </div>
         <div id="content">
-            <div id="<?php print($var) ?>" class="mainwindow">
+            <div id="<?php print($currentThread) ?>" class="mainWindow">
                 <div id="answers">
                 </div>
-                <a class="svara" style="margin-left:10px;">Svara</a>
+                <a class="svara">Svara</a>
                 <div class="answerBox" style="display: none;">
                     <textarea rows="4" cols="40" placeholder="Skriv ett svar" ></textarea>
                     <br>

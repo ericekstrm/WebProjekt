@@ -19,7 +19,7 @@
 .message {
     position: relative;
     z-index: 2;
-    border: black dotted 1px;
+    border: 1px black dotted;
 
     width: calc(100% - 25px);
     padding: 5px;

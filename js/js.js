@@ -12,7 +12,7 @@ function pushToFirebase(whereToAdd, jsonStrukt) {
     //går igenom alla föräldrar och samanställer en sökväg för firebase
     var object = $(whereToAdd).children("#answers");
     var path = "";
-    while (object.attr("class") !== "mainwindow") {
+    while (object.attr("class") !== "mainWindow") {
         path = object.attr("id") + "/" + path;
         object = object.parent();
     }
@@ -26,7 +26,7 @@ function addPushListeners() {
     //länken för att få upp dialogen för att svara på medelanden
     $(".svara").off();
     $(".svara").click(function () {
-        $(this).parent().children(".answerBox").css("display", "initial");
+        $(this).parent().children(".answerBox").css("display", "inline");
         $(this).css("display", "none");
     });
 
@@ -111,7 +111,6 @@ function addThreadListeners() {
     //triggar när sidan laddas och på varje ny tråd
     dataRef.on('child_added', function (snapshot) {
         var name = snapshot.ref().key();
-        console.log($("#nameInput").val());
         $("#sidePanel").children("ul").append("<li><a class='threadLink'>" + name + "</a></li>");
         $(".threadLink").off();
         $(".threadLink").click(function () {
@@ -125,25 +124,41 @@ function addThreadListeners() {
         var renderer = Handlebars.compile(template);
 
         var pos = $(this).offset();
-        $("#content").append(renderer({top: pos.top, left: pos.left}));
+        var x = pos.left;
+        if (x + 350 > $(window).width()) {
+            x -= 300;
+        }
+        console.log($(window).width());
+        $("#content").append(renderer({top: Math.floor(pos.top), left: x}));
         bindNewThreadListeners();
     });
 
     function bindNewThreadListeners() {
         $("#threadConfirm").click(function () {
             //skapar ny tråd och pushar till firebase
-            var threadName = $("#threadName").val();
-            var threadName = threadName.replace(" ", "_");
-            console.log(dataBaseLink + threadName + "/answers/");
+            var threadName = "";
+            if ($("#threadName").val() !== "") {
+                threadName = $("#threadName").val();
+            } else {
+                alert("du måste välja ett namn till tråden!");
+                return;
+            }
+            var name = "";
+            if ($("#nameInput").val() !== "") {
+                name = $("#nameInput").val();
+            } else {
+                alert("du måste välja ett användarnamn!");
+                return;
+            }
+            threadName = threadName.replace(" ", "_");
+
             var dataRef = new Firebase(dataBaseLink + threadName + "/answers/");
-            var s = $("#threadName").val();
-            console.log(s);
-            var json = {name: $("#nameInput").val(), message: $("#threadText").val(), date: new Date().toDateString()};
+            var json = {name: name, message: $("#threadText").val(), date: new Date().toDateString()};
             dataRef.push(json);
 
             removeNewThreadDialog();
 
-             window.location.href = "?t=" + threadName;
+            window.location.href = "?t=" + threadName;
         });
 
         $("#threadCancel").click(function () {
@@ -160,12 +175,10 @@ function addThreadListeners() {
     }
 }
 
-function addNameListener(){
+function addNameListener() {
     $("#nameInput").attr("value", localStorage["name"]);
-    
-    $("#nameInput").keyup(function(){
+
+    $("#nameInput").keyup(function () {
         localStorage["name"] = $("#nameInput").val();
-        console.log(localStorage["name"]);
     });
 }
-

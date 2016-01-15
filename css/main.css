@@ -57,6 +57,7 @@ a:hover {
 }
 
 #nameInput {
-    max-height: 30px;
+    height: 30px;
     width: 300px;
+    align-self: center;
 }
